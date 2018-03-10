@@ -9,7 +9,6 @@ COIN_REPO='https://github.com/OlympicCoin/olympic'
 COIN_NAME='Olympic'
 COIN_PORT=26667
 RPC_PORT=26666
-INSTALLED=0
 
 NODEIP=$(curl -s4 icanhazip.com)
 
@@ -17,17 +16,6 @@ NODEIP=$(curl -s4 icanhazip.com)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
-
-function delete_wallet() {
- if [ -s "$CONFIGFOLDER/$CONFIG_FILE" ]; then
-   /etc/init.d/$COIN_NAME stop
-   pkill $COIN_DAEMON >/dev/null 2>&1
-   sleep 5
-   rsync -a $CONFIGFOLDER/ $CONFIGFOLDER.bkp/
-   rm -r $CONFIGFOLDER/{smsgDB,txleveldb,smsg.ini,peers.dat,mncache.dat,blk0001.dat}
-   INSTALLED=1
- fi
-}
 
 function compile_node() {
   echo -e "Prepare to compile $COIN_NAME"
@@ -38,7 +26,7 @@ function compile_node() {
   strip Olympicd
   cp Olympicd /usr/local/bin
   cd -
-  #rm -rf $TMP_FOLDER >/dev/null 2>&1
+  rm -rf $TMP_FOLDER >/dev/null 2>&1
   clear
 }
 
@@ -132,7 +120,7 @@ function update_config() {
 logintimestamps=1
 maxconnections=256
 masternode=1
-#bind=$NODEIP
+bind=$NODEIP
 masternodeaddr=$NODEIP:$COIN_PORT
 masternodeprivkey=$COINKEY
 EOF
@@ -142,6 +130,7 @@ EOF
 function enable_firewall() {
   echo -e "Installing and setting up firewall to allow ingress on port ${GREEN}$COIN_PORT${NC}"
   ufw allow $COIN_PORT/tcp >/dev/null 2>&1
+  ufw allow $RPC_PORT/tcp >/dev/null 2>&1
   ufw allow ssh comment "SSH" >/dev/null 2>&1
   ufw limit ssh/tcp >/dev/null 2>&1
   ufw default allow outgoing >/dev/null 2>&1
@@ -275,14 +264,7 @@ function setup_node() {
 clear
 
 checks
-#prepare_system
-#create_swap
-#delete_wallet
-#compile_node
-if (( $INSTALLED == 0 )); then
- setup_node
-else
- /etc/init.d/$COIN_NAME start
- echo -e "${RED}New wallet compiled and installed. Old configuration was kept intact.${NC}"
- echo -e "Old configuration folder backed up as ${RED}$CONFIGFOLDER.bkp${NC}"
-fi
+prepare_system
+create_swap
+compile_node
+setup_node
