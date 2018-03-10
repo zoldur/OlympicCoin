@@ -4,15 +4,15 @@ Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a 
 
 ## Installation
 ```
-wget -q https://raw.githubusercontent.com/zoldur/OlympicCoin/master/olympic_install.sh  
+wget -q https://raw.githubusercontent.com/zoldur/OlympicCoin/master/olympic_install.sh
 bash olympic_install.sh
 ```
 ***
 
 ## Desktop wallet setup  
 
-After the MN is up and running, you need to configure the desktop wallet accordingly. Here are the steps:  
-1. Open the Olympicd Wallet.  
+After the MN is up and running, you need to configure the desktop wallet accordingly. Here are the steps:
+1. Open the Olympic Wallet.  
 2. Go to RECEIVE and create a New Address: **MN1**  
 3. Send **1500** **OLYMP** to **MN1**.  
 4. Wait for 16 confirmations.  
