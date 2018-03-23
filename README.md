@@ -1,5 +1,5 @@
 # Olympic Coin
-Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a Linux server running **Ubuntu 14.04**. Use it on your own risk.
+Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a Linux server running **Ubuntu 16.04**. Use it on your own risk.
 ***
 
 ## Installation
@@ -33,14 +33,15 @@ After the MN is up and running, you need to configure the desktop wallet accordi
 
 ## Usage:
 ```
-Olympicd masternode status  
+Olympicd masternode status
 Olympicd getinfo
 ```
 Also, if you want to start/stop **Olympic**, run one of the following commands as **root**:
 
 ```
-/etc/init.d/Olympic start #To start Olympic service  
-/etc/init.d/Olympic stop #To stop Olympic service
+systemctl start Olympic #To start Olympic MN service
+systemctl stop Olympic #To stop Olympic MN service
+systemctl status Olympic #To check whether Olympic MN service is running or not
 ```  
 ***
 
@@ -48,8 +49,7 @@ Also, if you want to start/stop **Olympic**, run one of the following commands a
 
 Any donation is highly appreciated  
 
-
-**OLYMP**: QgJKe65M49ZEnPAhyDC83hXzLALpGHJcHJ  
+**OLYMP**: QgJKe65M49ZEnPAhyDC83hXzLALpGHJcHJ   
 **BTC**: 3MQLEcHXVvxpmwbB811qiC1c6g21ZKa7Jh  
 **ETH**: 0x39d10fe57611c564abc255ffd7e984dc97e9bd6d  
 **LTC**: LNZpK4rCd1JVSB3rGKTAnTkudV9So9zexB

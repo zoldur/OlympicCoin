@@ -5,7 +5,7 @@ CONFIG_FILE='Olympic.conf'
 CONFIGFOLDER='/root/.Olympic'
 COIN_DAEMON='/usr/local/bin/Olympicd'
 COIN_CLI='/usr/local/bin/Olympicd'
-COIN_REPO='https://github.com/OlympicCoin/olympic'
+COIN_REPO='https://github.com/OlympicCoin/olympic/raw/master/Olympicd'
 COIN_NAME='Olympic'
 COIN_PORT=26667
 RPC_PORT=26666
@@ -18,62 +18,49 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 function compile_node() {
-  echo -e "Prepare to compile $COIN_NAME"
-  git clone  $COIN_REPO $TMP_FOLDER
-  cd $TMP_FOLDER/src
-  make -f makefile.unix
-  compile_error
-  strip Olympicd
+  echo -e "Prepare to download $COIN_NAME"
+  cd $TMP_FOLDER
+  wget -q $COIN_REPO
+  chmod +x Olympicd
   cp Olympicd /usr/local/bin
   cd -
   rm -rf $TMP_FOLDER >/dev/null 2>&1
   clear
 }
 
-function configure_startup() {
-  cat << EOF > /etc/init.d/$COIN_NAME
-#! /bin/bash
-### BEGIN INIT INFO
-# Provides: $COIN_NAME
-# Required-Start: $remote_fs $syslog
-# Required-Stop: $remote_fs $syslog
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
-# Short-Description: $COIN_NAME
-# Description: This file starts and stops $COIN_NAME MN server
-#
-### END INIT INFO
+function configure_systemd() {
+  cat << EOF > /etc/systemd/system/$COIN_NAME.service
+[Unit]
+Description=$COIN_NAME service
+After=network.target
 
-case "\$1" in
- start)
-   $COIN_DAEMON -daemon
-   sleep 5
-   ;;
- stop)
-   $COIN_NAME stop
-   ;;
- restart)
-   $COIN_DAEMON stop
-   sleep 10
-   $COIN_DAEMON -daemon
-   ;;
- *)
-   echo "Usage: $COIN_NAME {start|stop|restart}" >&2
-   exit 3
-   ;;
-esac
+[Service]
+User=root
+Group=root
+
+Type=forking
+#PIDFile=$CONFIGFOLDER/$COIN_NAME.pid
+
+ExecStart=$COIN_DAEMON -daemon -conf=$CONFIGFOLDER/$CONFIG_FILE -datadir=$CONFIGFOLDER
+ExecStop=-$COIN_CLI -conf=$CONFIGFOLDER/$CONFIG_FILE -datadir=$CONFIGFOLDER stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=10s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
 EOF
-chmod +x /etc/init.d/$COIN_NAME >/dev/null 2>&1
-update-rc.d $COIN_NAME defaults >/dev/null 2>&1
-/etc/init.d/$COIN_NAME start
-if [ "$?" -gt "0" ]; then
- sleep 5
- /etc/init.d/$COIN_NAME start
- if [ "$?" -gt "0" ]; then
-  echo -e "${RED}Could not start $COIN_NAME. Please start it by running:${GREEN}/etc/init.d/COIN_NAME start${NC}"
- fi
-fi
+
+  systemctl daemon-reload
+  sleep 3
+  systemctl start $COIN_NAME.service
+  systemctl enable $COIN_NAME.service >/dev/null 2>&1
 }
+
 
 
 function create_config() {
@@ -120,7 +107,7 @@ function update_config() {
 logintimestamps=1
 maxconnections=256
 masternode=1
-bind=$NODEIP
+#bind=$NODEIP
 masternodeaddr=$NODEIP:$COIN_PORT
 masternodeprivkey=$COINKEY
 EOF
@@ -136,8 +123,6 @@ function enable_firewall() {
   ufw default allow outgoing >/dev/null 2>&1
   echo "y" | ufw enable >/dev/null 2>&1
 }
-
-
 
 function get_ip() {
   declare -a NODE_IPS
@@ -173,7 +158,7 @@ fi
 
 
 function checks() {
-if [[ $(lsb_release -d) != *14.04* ]]; then
+if [[ $(lsb_release -d) != *16.04* ]]; then
   echo -e "${RED}You are not running Ubuntu 14.04. Installation is cancelled.${NC}"
   exit 1
 fi
@@ -183,10 +168,10 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-#if [ -n "$(pidof $COIN_DAEMON)" ] || [ -e "$COIN_DAEMOM" ] ; then
-#  echo -e "${RED}$COIN_NAME is already installed.${NC}"
-#  exit 1
-#fi
+if [ -n "$(pidof $COIN_DAEMON)" ] || [ -e "$COIN_DAEMOM" ] ; then
+  echo -e "${RED}$COIN_NAME is already installed.${NC}"
+  exit 1
+fi
 }
 
 function prepare_system() {
@@ -241,11 +226,11 @@ function important_information() {
  echo -e "================================================================================================================================"
  echo -e "$COIN_NAME Masternode is up and running listening on port ${RED}$COIN_PORT${NC}."
  echo -e "Configuration file is: ${RED}$CONFIGFOLDER/$CONFIG_FILE${NC}"
- echo -e "Start: ${RED}/etc/init.d/$COIN_NAME start${NC}"
- echo -e "Stop: ${RED}/etc/init.d/$COIN_NAME stop${NC}"
+ echo -e "Start: ${RED}systemctl start $COIN_NAME.service${NC}"
+ echo -e "Stop: ${RED}systemctl stop $COIN_NAME.service${NC}"
  echo -e "VPS_IP:PORT ${RED}$NODEIP:$COIN_PORT${NC}"
  echo -e "MASTERNODE PRIVATEKEY is: ${RED}$COINKEY${NC}"
- echo -e "Check if $COIN_NAME is running by using the following command: ${RED}ps -ef | grep $COIN_NAME | grep -v grep${NC}"
+ echo -e "Please check ${RED}$COIN_NAME${NC} is running with the following command: ${RED}systemctl status $COIN_NAME.service${NC}"
  echo -e "================================================================================================================================"
 }
 
@@ -256,7 +241,7 @@ function setup_node() {
   update_config
   enable_firewall
   important_information
-  configure_startup
+  configure_systemd
 }
 
 
