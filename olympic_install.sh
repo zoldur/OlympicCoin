@@ -5,7 +5,7 @@ CONFIG_FILE='Olympic.conf'
 CONFIGFOLDER='/root/.Olympic'
 COIN_DAEMON='/usr/local/bin/Olympicd'
 COIN_CLI='/usr/local/bin/Olympicd'
-COIN_REPO='https://github.com/OlympicCoin/olympic/releases/download/v2.0/Olympicd'
+COIN_REPO='https://github.com/OlympicCoin/olympic/raw/master/Olympicd-ubuntu16'
 COIN_NAME='Olympic'
 COIN_PORT=26667
 RPC_PORT=26666
@@ -21,6 +21,7 @@ function compile_node() {
   echo -e "Prepare to download $COIN_NAME"
   cd $TMP_FOLDER
   wget -q $COIN_REPO
+  mv Olympicd-ubuntu16 Olympicd
   chmod +x Olympicd
   cp Olympicd /usr/local/bin
   cd -
