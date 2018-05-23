@@ -45,6 +45,19 @@ systemctl status Olympic #To check whether Olympic MN service is running or not
 ```  
 ***
 
+## Masternode update
+In order to update your Masternode to version 4.0.0.0, please run the following commands:
+```
+cd /tmp
+wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.0.0/Olympicd
+chmod +x Olympicd
+systemctl stop Olympic
+mv Olympicd /usr/local/bin
+systemctl start Olympic
+cd -
+```
+***
+
 ## Donations
 
 Any donation is highly appreciated  
