@@ -53,6 +53,8 @@ wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.0.0/
 chmod +x Olympicd
 systemctl stop Olympic
 mv Olympicd /usr/local/bin
+cd /root/.Olympic
+rm -r !(Olymipc.conf)
 systemctl start Olympic
 cd -
 ```
