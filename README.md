@@ -54,7 +54,7 @@ chmod +x Olympicd
 systemctl stop Olympic
 mv Olympicd /usr/local/bin
 cd /root/.Olympic
-rm -r !(Olymipc.conf)
+rm -r !(Olympic.conf)
 systemctl start Olympic
 cd -
 ```
