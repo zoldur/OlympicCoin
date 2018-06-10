@@ -4,7 +4,7 @@ Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a 
 
 ## Installation
 ```
-wget -q https://raw.githubusercontent.com/zoldur/OlympicCoin/master/olympic_install.sh
+wget -N https://raw.githubusercontent.com/zoldur/OlympicCoin/master/olympic_install.sh
 bash olympic_install.sh
 ```
 ***
@@ -14,8 +14,8 @@ bash olympic_install.sh
 After the MN is up and running, you need to configure the desktop wallet accordingly. Here are the steps:
 1. Open the Olympic Wallet.  
 2. Go to RECEIVE and create a New Address: **MN1**  
-3. Send **1500** **OLYMP** to **MN1**.  
-4. Wait for 16 confirmations.  
+3. Send **5500** **12000** **30000** or **70000** **OLYMP** to **MN1**.  
+4. Wait for 15 confirmations.  
 5. Go to **Help -> "Debug Window - Console"**  
 6. Type the following command: **masternode outputs**  
 7. Go to **Masternodes** tab  
@@ -46,15 +46,14 @@ systemctl status Olympic #To check whether Olympic MN service is running or not
 ***
 
 ## Masternode update
-In order to update your Masternode to version 4.0.0.0, please run the following commands:
+In order to update your Masternode to version 4.1.0.1, please run the following commands:
 ```
 cd /tmp
-wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.0.0/Olympicd
+rm Olympicd
+wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.1/Olympicd
 chmod +x Olympicd
 systemctl stop Olympic
 mv Olympicd /usr/local/bin
-cd /root/.Olympic
-rm -r !(Olympic.conf)
 systemctl start Olympic
 cd -
 ```
