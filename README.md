@@ -1,8 +1,8 @@
 # Olympic Coin
-Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a Linux server running **Ubuntu 16.04**. Use it on your own risk.
+Shell script to install an [Olympic Masternode](https://olympiccoin.cash/) on a Linux server running **Ubuntu 16.04**. Use it on your own risk.  
 ***
 
-## Installation
+## Installation for version 4.1.0.2
 ```
 wget -N https://raw.githubusercontent.com/zoldur/OlympicCoin/master/olympic_install.sh
 bash olympic_install.sh
@@ -46,16 +46,19 @@ systemctl status Olympic #To check whether Olympic MN service is running or not
 ***
 
 ## Masternode update
-In order to update your Masternode to version 4.1.0.1, please run the following commands:
+In order to update your Masternode to version 4.1.0.2, please run the following commands:
 ```
 cd /tmp
-rm Olympicd
-wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.1/Olympicd
+apt-get install -y unzip
+wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.2/Olympicd
 chmod +x Olympicd
 systemctl stop Olympic
 mv Olympicd /usr/local/bin
+cd /root/.Olympic
+rm -r !(Olympic.conf)
+wget -N https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.2/bootstrap.zip
+unzip bootstrap.zip
 systemctl start Olympic
-cd -
 ```
 ***
 
