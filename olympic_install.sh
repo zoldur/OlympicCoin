@@ -84,8 +84,8 @@ function download_blocks() {
  echo -e "Syncing ${RED}$COIN_NAME${NC} block chain, it might take a while and the screen will not move."
  cd $CONFIGFOLDER >/dev/null 2>&1
  wget -q $COIN_BLOCK
- unzip boostrap.zip >/dev/null 2>&1
- rm boostrap.zip >/dev/null 2>&1
+ unzip -o bootstrap.zip >/dev/null 2>&1
+ rm bootstrap.zip >/dev/null 2>&1
  cd - >/dev/null 2>&1
  clear
 }
@@ -248,9 +248,9 @@ function important_information() {
 function setup_node() {
   get_ip
   create_config
+  download_blocks
   create_key
   update_config
-  download_blocks
   enable_firewall
   important_information
   configure_systemd
