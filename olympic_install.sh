@@ -5,8 +5,9 @@ CONFIG_FILE='Olympic.conf'
 CONFIGFOLDER='/root/.Olympic'
 COIN_DAEMON='/usr/local/bin/Olympicd'
 COIN_CLI='/usr/local/bin/Olympicd'
-COIN_REPO='https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.1/Olympicd'
+COIN_REPO='https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.2/Olympicd'
 COIN_NAME='Olympic'
+COIN_BLOCK='https://github.com/OlympicCoinTeam/OlympicCoin/releases/download/v4.1.0.2/bootstrap.zip'
 COIN_PORT=26667
 RPC_PORT=26666
 
@@ -77,6 +78,16 @@ server=1
 daemon=1
 port=$COIN_PORT
 EOF
+}
+
+function download_blocks() {
+ echo -e "Syncing ${RED}$COIN_NAME${NC} block chain, it might take a while and the screen will not move."
+ cd $CONFIGFOLDER >/dev/null 2>&1
+ wget -q $COIN_BLOCK
+ unzip boostrap.zip >/dev/null 2>&1
+ rm boostrap.zip >/dev/null 2>&1
+ cd - >/dev/null 2>&1
+ clear
 }
 
 function create_key() {
@@ -187,7 +198,7 @@ apt-get update >/dev/null 2>&1
 apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" make software-properties-common \
 build-essential libtool autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev \
 libboost-system-dev libboost-test-dev libboost-thread-dev sudo automake git wget curl libdb4.8-dev bsdmainutils libdb4.8++-dev \
-libminiupnpc-dev libgmp3-dev ufw pkg-config libevent-dev  >/dev/null 2>&1
+libminiupnpc-dev libgmp3-dev ufw pkg-config libevent-dev unzip >/dev/null 2>&1
 if [ "$?" -gt "0" ];
   then
     echo -e "${RED}Not all required packages were installed properly. Try to install them manually by running the following commands:${NC}\n"
@@ -197,7 +208,7 @@ if [ "$?" -gt "0" ];
     echo "apt-get update"
     echo "apt install -y make build-essential libtool software-properties-common autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev \
 libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev sudo automake git pwgen curl libdb4.8-dev \
-bsdmainutils libdb4.8++-dev libminiupnpc-dev libgmp3-dev ufw pkg-config libevent-dev "
+bsdmainutils libdb4.8++-dev libminiupnpc-dev libgmp3-dev ufw pkg-config libevent-dev unzip"
  exit 1
 fi
 }
@@ -239,6 +250,7 @@ function setup_node() {
   create_config
   create_key
   update_config
+  download_blocks
   enable_firewall
   important_information
   configure_systemd
